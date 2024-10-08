@@ -4,12 +4,12 @@
 const int wavePin = 13;
 
 // Variables for frequency and signal generation
-volatile unsigned int frequency = 1000; // Default frequency 1000Hz
+volatile unsigned int frequency = 5; // Default frequency 1000Hz
 volatile bool isGenerating = false;     // Flag to control wave generation
 unsigned long highTime;                 // High part of the signal in microseconds
 
 // Timing constants
-const unsigned long lowTime = 70 - 5;       // Low part duration in microseconds
+const unsigned long lowTime = 70;       // Low part duration in microseconds
 
 void setup() {
   // Set up wave pin as output
@@ -59,7 +59,7 @@ void handleCommand() {
     }     
   } else if (Serial.available() == 2) {
     String command = Serial.readString();
-    // Serial.println(secondChar);
+//     Serial.println(command);
     if (command == "f?") {
       Serial.println(command + String(frequency));
     } else {
@@ -77,7 +77,7 @@ void handleCommand() {
       digitalWrite(LED_BUILTIN, LOW);
       digitalWrite(wavePin, LOW);
       isGenerating = false;
-      digitalWrite(wavePin, LOW);  // Ensure the signal stops in LOW state
+//      digitalWrite(wavePin, LOW);  // Ensure the signal stops in LOW state
     } else {
       Serial.println("Invalid command: " + String(command));
     }
@@ -94,7 +94,7 @@ void calculateHighTime() {
   
   // High time is the period minus the low time (80 microseconds)
   if (period > lowTime) {
-    highTime = period - lowTime - 6;
+    highTime = period - lowTime;
   } else {
     highTime = 0; // Prevent negative or invalid high time
   }
@@ -103,8 +103,10 @@ void calculateHighTime() {
 // Function to generate the square wave signal
 void generateSquareWave() {
   // Set the pin HIGH for the calculated high time
+  digitalWrite(LED_BUILTIN, HIGH);
   delayMicroseconds(highTime);
 
   // Set the pin LOW for the constant low time
+  digitalWrite(LED_BUILTIN, LOW);
   delayMicroseconds(lowTime);
 }
